@@ -62,11 +62,11 @@ class bleague2ical:
         title = []
         teamindex = self.teamindex()
         if league is not None:
-            title.append(league + "リーグ")
+            title.append(league + u"リーグ")
         if hometeam is not None and hometeam in teamindex:
-            title.append("ホーム " + teamindex[hometeam])
+            title.append(u"ホーム " + teamindex[hometeam])
         if awayteam is not None and awayteam in teamindex:
-            title.append("アウェイ" + teamindex[awayteam])
+            title.append(u"アウェイ" + teamindex[awayteam])
         if stadium is not None:
             title.append(stadium)
         if team is not None and team in teamindex:
