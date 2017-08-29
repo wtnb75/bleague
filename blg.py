@@ -91,10 +91,10 @@ class bleague2ical:
                             continue
                         ev = icalendar.Event()
                         s = lg + " " + \
-                            "%(HomeTeamShortName)s - %(AwayTeamShortName)s" % (match)
+                            "%(HomeTeamShortName)s-%(AwayTeamShortName)s" % (match)
                         if match["GameEndedFlg"] != "before":
                             s = lg + " " + \
-                                "%(HomeTeamShortName)s %(HomeTeamScore)s - %(AwayTeamScore)s %(AwayTeamShortName)s" % (match)
+                                "%(HomeTeamShortName)s%(HomeTeamScore)s-%(AwayTeamScore)s%(AwayTeamShortName)s" % (match)
                         ev.add("summary", s)
                         if match["GameTime"] in ("00:00", ""):
                             startat = icalendar.vDate(datetime.datetime(
