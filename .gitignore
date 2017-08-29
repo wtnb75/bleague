@@ -1,0 +1,4 @@
+*.swp
+*.ipynb
+*.json
+.python-version

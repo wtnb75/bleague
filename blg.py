@@ -10,6 +10,7 @@ except ImportError:
     from urllib2 import urlopen
 import datetime
 import logging
+import pytz
 
 
 logging.basicConfig(
@@ -17,6 +18,7 @@ logging.basicConfig(
 app = flask.Flask(__name__)
 app.config["JSON_AS_ASCII"] = False
 cachez.set_persist_folder("/tmp/cachez")
+tzone = pytz.timezone("Asia/Tokyo")
 
 
 @cachez.persisted(hours=1)
@@ -97,12 +99,12 @@ class bleague2ical:
                                 "%(HomeTeamShortName)s%(HomeTeamScore)s-%(AwayTeamScore)s%(AwayTeamShortName)s" % (match)
                         ev.add("summary", s)
                         if match["GameTime"] in ("00:00", ""):
-                            startat = icalendar.vDate(datetime.datetime(
-                                *map(int, match["FullGameDate"].split("."))))
+                            startat = icalendar.vDate(tzone.localize(datetime.datetime(
+                                *map(int, match["FullGameDate"].split(".")))))
                             endat = startat
                         else:
-                            startat = datetime.datetime.strptime(
-                                match["FullGameDate"] + " " + match["GameTime"], "%Y.%m.%d %H:%M")
+                            startat = tzone.localize(datetime.datetime.strptime(
+                                match["FullGameDate"] + " " + match["GameTime"], "%Y.%m.%d %H:%M"))
                             endat = startat + datetime.timedelta(hours=2)
                         ev.add("dtstart", startat)
                         ev.add("dtend", endat)
