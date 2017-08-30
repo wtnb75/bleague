@@ -180,6 +180,7 @@ def getindex(league=None):
     ics = bleague2ical()
     body = []
     body.append("<html><head><title>B league calendar</title></head><body>")
+    body.append("<p>ical download</p>")
     if league is None:
         lgs = sorted(ics.leagueindex())
     else:
