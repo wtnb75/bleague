@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head><title>Bリーグ日程 ical配布</title></head>
+<body>
+<p>バスケットボール Bリーグの日程表を予定表に取り込める形式に変換して提供しています。</p>
+{% for league in data.keys()|sort %}
+<h1>{{league}}</h1>
+<ul>
+  {% for id in data[league].keys()|sort -%}
+  {%- if id != "" -%}
+  <li><a href="./{{id}}.ics">{{data[league][id]}}</a> ( <a href="./home/{{id}}.ics">home</a> | <a href="./away/{{id}}.ics">away</a> )</li>
+  {% endif %}
+  {%- endfor -%}
+</ul>
+{% endfor %}
+</body>
+</html>

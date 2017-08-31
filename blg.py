@@ -57,6 +57,7 @@ class bleague2ical:
                             ] = match["HomeTeamShortName"]
                         ret[match["AwayMediaTeamID"]
                             ] = match["AwayTeamShortName"]
+        del ret[""]
         return ret
 
     def convert(self, league=None, team=None, hometeam=None, awayteam=None, stadium=None):
@@ -178,25 +179,14 @@ def geticalaway(team):
 @app.route("/<league>.html")
 def getindex(league=None):
     ics = bleague2ical()
-    body = []
-    body.append("<html><head><title>B league calendar</title></head><body>")
-    body.append("<p>ical download</p>")
+    data = {}
     if league is None:
         lgs = sorted(ics.leagueindex())
     else:
         lgs = [league]
     for lg in lgs:
-        body.append("<h1>%s</h1>" % (lg))
-        teams = []
-        tidx = ics.teamindex(lg)
-        for k in sorted(tidx.keys()):
-            v = tidx[k]
-            teams.append(
-                """<li><a href="./%s.ics">%s</a>(<a href="./home/%s.ics">home</a>|<a href="./away/%s.ics">away</a>)</li>""" % (k, v, k, k))
-        body.append("\n".join(teams))
-    body.append("</body></html>")
-    resp = flask.Response("".join(body), mimetype="text/html")
-    return resp
+        data[lg] = ics.teamindex(lg)
+    return flask.render_template("index.j2", data=data)
 
 
 if __name__ == "__main__":
