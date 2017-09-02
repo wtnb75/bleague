@@ -57,7 +57,8 @@ class bleague2ical:
                             ] = match["HomeTeamShortName"]
                         ret[match["AwayMediaTeamID"]
                             ] = match["AwayTeamShortName"]
-        del ret[""]
+        if "" in ret:
+            del ret[""]
         return ret
 
     def convert(self, league=None, team=None, hometeam=None, awayteam=None, stadium=None):
