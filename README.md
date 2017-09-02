@@ -2,3 +2,4 @@
 
 - pip install -r requirements.txt
 - python blg.py
+  - or: gunicorn blg:app
