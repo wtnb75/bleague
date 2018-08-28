@@ -30,8 +30,10 @@ def geturl(url):
 class bleague2ical:
     def __init__(self):
         self.urls = [
-            "https://fetch.bleague.jp/1.0/gamesummary/getLeague?GameY=2017&EventKey=league",
+            # "https://fetch.bleague.jp/1.0/gamesummary/getLeague?GameY=2017&EventKey=league",
             # "file:bleague.json",
+            "file:2017.json",
+            "file:2016.json",
         ]
         self.detailurl = "https://www.bleague.jp/game_detail/?YMD=%(yyyymmdd)s&TAB=R&CLUB=%(HomeMediaTeamID)s&DOUBLEHEADERFLAG=false"
 
