@@ -1,7 +1,7 @@
 # convert B.League schedule to ical format
 
 - python -m venv .
-- ./bin/activate
+- . ./bin/activate
 - pip install -r requirements.txt
 - python blg.py
   - or: gunicorn blg:app

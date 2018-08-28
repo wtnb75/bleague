@@ -3,3 +3,5 @@ icalendar
 Flask
 pytz
 gunicorn
+lxml
+requests
