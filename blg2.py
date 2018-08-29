@@ -149,7 +149,7 @@ class bleague2ical2:
     def leagueindex(self):
         res = []
         for k, v in self.data.items():
-            if len(v) != 0:
+            if len(v) != 0 and k.startswith("B"):
                 res.append(k)
         return res
 
