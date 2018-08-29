@@ -3,6 +3,11 @@
 - python -m venv .
 - . ./bin/activate
 - pip install -r requirements.txt
-- python blg.py
-  - or: gunicorn blg:app
-  - or: FLASK_APP=blg.py flask run
+- python main.py
+  - or: gunicorn main:app
+  - or: FLASK_APP=main.py flask run
+
+## access
+
+- http://localhost:8080/      -> 2018 season
+- http://localhost:8080/old/  -> 2016, 2017 season
