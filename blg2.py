@@ -49,20 +49,20 @@ class bleague2ical2:
                 "setuFrom": 1,
                 "setuTo": 36,
             }),
-            "オールスター": self.merge(b1, {"event": 5}),
-            "B1チャンピオンシップ": self.merge(b1, {"event": 3}),
-            "B1残留プレーオフ": self.merge(b1, {"event": 4}),
-            "B1・B2入替戦": self.merge(b1, {"event": 11}),
-            "アーリーカップ": self.merge(b1, {"event": 20}),
+            u"オールスター": self.merge(b1, {"event": 5}),
+            u"B1チャンピオンシップ": self.merge(b1, {"event": 3}),
+            u"B1残留プレーオフ": self.merge(b1, {"event": 4}),
+            u"B1・B2入替戦": self.merge(b1, {"event": 11}),
+            u"アーリーカップ": self.merge(b1, {"event": 20}),
             "B2": self.merge(b2, {
                 "event": 7,
                 "club": "",
                 "setuFrom": 1,
                 "setuTo": 36,
             }),
-            "B2残留プレーオフ": self.merge(b2, {"event": 9}),
-            "B2プレーオフ": self.merge(b2, {"event": 8}),
-            "B2・B3入替戦": self.merge(b2, {"event": 17}),
+            u"B2残留プレーオフ": self.merge(b2, {"event": 9}),
+            u"B2プレーオフ": self.merge(b2, {"event": 8}),
+            u"B2・B3入替戦": self.merge(b2, {"event": 17}),
         }
         self.readAll()
 
