@@ -1,9 +1,9 @@
 *.swp
 *.ipynb
-*.json
 .python-version
 __pycache__
 *.pyc
 bin
 lib
 pyvenv.cfg
+pip-selfcheck.json
