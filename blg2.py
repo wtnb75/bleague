@@ -50,7 +50,7 @@ class bleague2ical2:
                 "setuFrom": 1,
                 "setuTo": 36,
             }),
-            "オールスター": self.merge(b1, {"event": 5}),
+            # "オールスター": self.merge(b1, {"event": 5}),
             "B1チャンピオンシップ": self.merge(b1, {"event": 3}),
             "B1残留プレーオフ": self.merge(b1, {"event": 4}),
             "B1・B2入替戦": self.merge(b1, {"event": 11}),
