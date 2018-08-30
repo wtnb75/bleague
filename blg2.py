@@ -8,12 +8,13 @@ from lxml.html import fromstring
 import logging
 import icalendar
 import datetime
+import pytz
 
 logging.basicConfig(
     format="%(asctime)-15s %(levelname)s %(message)s", level=logging.DEBUG)
 app = flask.Flask(__name__)
 app.config["JSON_AS_ASCII"] = False
-
+tzone = pytz.timezone("Asia/Tokyo")
 cachez.set_persist_folder("/tmp/cachez")
 
 
@@ -209,6 +210,8 @@ class bleague2ical2:
             else:
                 startat = self.mktime(start)
                 endat = startat + datetime.timedelta(hours=2)
+                startat = tzone.localize(startat)
+                endat = tzone.localize(endat)
             ev.add("dtstart", startat)
             ev.add("dtend", endat)
             ev.add("location", "%(arena)s" % (data))
