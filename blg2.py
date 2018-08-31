@@ -83,7 +83,10 @@ class bleague2ical2:
                 for game in games.find_class("gamedata_left"):
                     home, away = [x.text_content().strip() for x in game.find_class("team")]
                     homept, awaypt = self.text1(game, "point").split("VS")
-                    arena = self.text1(game, "arena")
+                    ar = game.find_class("arena")[0]
+                    pref = ar.text.strip()
+                    arena = ar.getchildren()[0].tail.strip()
+                    # arena = self.text1(game, "arena")
                     datestr = self.text1(game, "date")
                     timestr = self.text1(game, "time").split()[0]
                     name = self.text1(game, "ScheduleClassName")
@@ -94,6 +97,7 @@ class bleague2ical2:
                         timeval = None
                     ent = {
                         "sname": sname,
+                        "pref": pref,
                         "arena": arena,
                         "startAt": timeval,
                         "date": datestr,
@@ -214,7 +218,7 @@ class bleague2ical2:
                 endat = tzone.localize(endat)
             ev.add("dtstart", startat)
             ev.add("dtend", endat)
-            ev.add("location", "%(arena)s" % (data))
+            ev.add("location", "%(arena)s (%(pref)s)" % (data))
             ev.add("description", u"%(league)s %(sname)s" % (d))
             ical.add_component(ev)
         return ical
