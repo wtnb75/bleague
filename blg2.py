@@ -82,7 +82,12 @@ class bleague2ical2:
             for games in rlist.find_class("game_list"):
                 for game in games.find_class("gamedata_left"):
                     home, away = [x.text_content().strip() for x in game.find_class("team")]
-                    homept, awaypt = self.text1(game, "point").split("VS")
+                    print("home", home, "away", away)
+                    print("text", self.text1(game, "point"))
+                    try:
+                        homept, awaypt = self.text1(game, "point").split("-")
+                    except ValueError:
+                        homept, awaypt = '', ''
                     ar = game.find_class("arena")[0]
                     pref = ar.text.strip()
                     arena = ar.getchildren()[0].tail.strip()
