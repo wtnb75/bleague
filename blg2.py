@@ -35,6 +35,7 @@ class bleague2ical2:
 
     def __init__(self):
         self.baseurl = "https://www.bleague.jp/schedule/"
+        self.detailurl = "https://www.bleague.jp/game_detail/?ScheduleKey=%(key)s"
         year = 2018
         b1 = {
             "tab": 1,
@@ -225,6 +226,7 @@ class bleague2ical2:
             ev.add("dtend", endat)
             ev.add("location", "%(arena)s (%(pref)s)" % (data))
             ev.add("description", u"%(league)s %(sname)s" % (d))
+            ev.add("url", self.detailurl % (d))
             ical.add_component(ev)
         return ical
 
