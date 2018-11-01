@@ -214,6 +214,10 @@ class bleague2ical2:
             s = "%(league)s %(home)s%(homept)s - %(awaypt)s%(away)s" % (d)
             ev.add("summary", s)
             start = data.get("startAt")
+            if start is None:
+                logging.warning("not found: league=%s, team=%s, home=%s, away=%s, arena=%s",
+                                league, team, hometeam, awayteam, stadium)
+                flask.abort(404)
             if start.tm_hour == 0:
                 startat = self.mkdate(start)
                 endat = startat
