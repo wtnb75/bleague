@@ -1,9 +1,10 @@
 from werkzeug.wsgi import DispatcherMiddleware
 from werkzeug.serving import run_simple
 from blg import app as app1
-from blg2 import app as app2
+# from blg2018 import app as app2
 
-app = DispatcherMiddleware(app2, {'/old': app1})
+# app = DispatcherMiddleware(app2, {'/old': app1})
+app = app1
 
 if __name__ == "__main__":
     # debug = True

@@ -6,6 +6,7 @@ import icalendar
 import cachez
 try:
     from urllib.request import urlopen
+    import urllib.error
 except ImportError:
     from urllib2 import urlopen
 import datetime
@@ -24,7 +25,18 @@ tzone = pytz.timezone("Asia/Tokyo")
 @cachez.persisted(hours=1)
 def geturl(url):
     logging.info("fetching %s", url)
-    return json.loads(urlopen(url).read().decode("UTF-8"))
+    try:
+        return json.loads(urlopen(url).read().decode("UTF-8"))
+    except urllib.error.URLError:
+        return {"data": {}}
+
+
+def geturl_nocache(fname):
+    try:
+        with open(fname) as f:
+            return json.load(fp=f)
+    except FileNotFoundError:
+        return {"data": {}}
 
 
 class bleague2ical:
@@ -32,19 +44,25 @@ class bleague2ical:
         self.urls = [
             # "https://fetch.bleague.jp/1.0/gamesummary/getLeague?GameY=2017&EventKey=league",
             # "file:bleague.json",
+            "file:2019.json",
+            "file:2018.json",
             "file:2017.json",
             "file:2016.json",
         ]
-        self.detailurl = "https://www.bleague.jp/game_detail/?YMD=%(yyyymmdd)s&TAB=R&CLUB=%(HomeMediaTeamID)s&DOUBLEHEADERFLAG=false"
+        self.detailurl = "https://www.bleague.jp/game_detail/?ScheduleKey=%(ScheduleKey)s"
 
     def getdata(self):
         for url in self.urls:
-            yield geturl(url)
+            if url.startswith("file:"):
+                yield geturl_nocache(url[5:])
+            else:
+                yield geturl(url)
 
     def leagueindex(self):
         ret = set()
         for data in self.getdata():
             ret.update(data["data"].keys())
+            break
         return list(ret)
 
     def teamindex(self, league=None):
@@ -59,6 +77,7 @@ class bleague2ical:
                             ] = match["HomeTeamShortName"]
                         ret[match["AwayMediaTeamID"]
                             ] = match["AwayTeamShortName"]
+            break
         if "" in ret:
             del ret[""]
         return ret
@@ -184,11 +203,16 @@ def getindex(league=None):
     ics = bleague2ical()
     data = {}
     if league is None:
-        lgs = sorted(ics.leagueindex())
+        # lgs = sorted(ics.leagueindex())
+        lgs = ["B1", "B2"]
     else:
         lgs = [league]
     for lg in lgs:
-        data[lg] = ics.teamindex(lg)
+        teams = ics.teamindex(lg)
+        if teams not in (None, {}):
+            if None in teams:
+                teams.pop(None)
+            data[lg] = teams
     return flask.render_template("index.j2", data=data)
 
 
