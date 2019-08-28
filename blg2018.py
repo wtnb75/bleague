@@ -14,6 +14,7 @@ logging.basicConfig(
     format="%(asctime)-15s %(levelname)s %(message)s", level=logging.DEBUG)
 app = flask.Flask(__name__)
 app.config["JSON_AS_ASCII"] = False
+
 tzone = pytz.timezone("Asia/Tokyo")
 cachez.set_persist_folder("/tmp/cachez")
 
@@ -82,7 +83,8 @@ class bleague2ical2:
             sname = self.text1(rlist, "setsu_name")
             for games in rlist.find_class("game_list"):
                 for game in games.find_class("gamedata_left"):
-                    home, away = [x.text_content().strip() for x in game.find_class("team")]
+                    home, away = [x.text_content().strip()
+                                  for x in game.find_class("team")]
                     # print("home", home, "away", away)
                     # print("text", self.text1(game, "point"))
                     try:
@@ -98,7 +100,8 @@ class bleague2ical2:
                     name = self.text1(game, "ScheduleClassName")
                     schedkey = int(game.getparent().get("data-schedule-key"))
                     try:
-                        timeval = time.localtime(int(game.getparent().get("data-game-date")))
+                        timeval = time.localtime(
+                            int(game.getparent().get("data-game-date")))
                     except ValueError:
                         timeval = None
                     ent = {
@@ -188,6 +191,43 @@ class bleague2ical2:
 
     def mktime(self, s):
         return datetime.datetime.fromtimestamp(time.mktime(s))
+
+    def team2id(self, name):
+        tm = list(filter(lambda v: v[1] == name, self.team_map.items()))
+        if len(tm) != 1:
+            return None
+        return tm[0][0]
+
+    def convert2json(self):
+        data = {}
+        for lg, matches in self.data.items():
+            data[lg] = {}
+            for i, m in enumerate(matches):
+                sn = m["sname"].lstrip("第").rstrip("節")
+                hmid = self.team2id(m["home"])
+                awid = self.team2id(m["away"])
+                if sn not in data[lg]:
+                    data[lg][sn] = []
+                data[lg][sn].append({
+                    "ScheduleKey": m["key"],
+                    "FullGameDate": time.strftime("%Y.%m.%d", m["startAt"]),
+                    "GameDate": time.strftime("%m.%d", m["startAt"]),
+                    "GameTime": time.strftime("%H:%M", m["startAt"]),
+                    "HomeTeamShortName": m["home"],
+                    "AwayTeamShortName": m["away"],
+                    "HomeMediaTeamID": hmid,
+                    "AwayMediaTeamID": awid,
+                    "StadiumName": m["arena"],
+                    "Prefecture": m["pref"],
+                    "HomeTeamScore": m["homept"],
+                    "AwayTeamScore": m["awaypt"],
+                    "GameEndedFlg": "after",
+                    "DoubleHeaderFlag": False,
+                })
+        return {
+            "result": "OK",
+            "data": data,
+        }
 
     def convert(self, league=None, team=None, hometeam=None, awayteam=None, stadium=None):
         ical = icalendar.Calendar()

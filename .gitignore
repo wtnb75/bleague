@@ -5,5 +5,8 @@ __pycache__
 *.pyc
 bin
 lib
+include
 pyvenv.cfg
 pip-selfcheck.json
+.coverage
+htmlcov

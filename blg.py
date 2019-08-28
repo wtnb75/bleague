@@ -32,10 +32,11 @@ class bleague2ical:
         self.urls = [
             # "https://fetch.bleague.jp/1.0/gamesummary/getLeague?GameY=2017&EventKey=league",
             # "file:bleague.json",
+            "file:2018.json",
             "file:2017.json",
             "file:2016.json",
         ]
-        self.detailurl = "https://www.bleague.jp/game_detail/?YMD=%(yyyymmdd)s&TAB=R&CLUB=%(HomeMediaTeamID)s&DOUBLEHEADERFLAG=false"
+        self.detailurl = "https://www.bleague.jp/game_detail/?ScheduleKey=%(ScheduleKey)s"
 
     def getdata(self):
         for url in self.urls:
