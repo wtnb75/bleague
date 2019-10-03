@@ -140,6 +140,8 @@ class bleague2ical:
                             ".", "")
                         durl = self.detailurl % (match)
                         ev.add("url", durl)
+                        ev.add(
+                            "uid", "match_id_%(ScheduleKey)s@wtnb.mydns.jp.bleague" % (match))
                         ev.add("description", u"%s 第%s節" % (lg, numstr))
                         ical.add_component(ev)
         return ical
