@@ -9,7 +9,7 @@
 <ul>
   {% for id in data[league].keys() | sort -%}
   {%- if id != "" -%}
-  <li><a href="./{{id}}.ics">{{data[league][id]}}</a> ( <a href="./home/{{id}}.ics">home</a> | <a href="./away/{{id}}.ics">away</a> )</li>
+  <li><a href="./{{id}}.ics">{{data[league][id]}}</a> ( <a href="./home/{{id}}.ics">home</a> | <a href="./away/{{id}}.ics">away</a> ) <a href="https://open-web-calendar.herokuapp.com/calendar.html?url=https%3A%2F%2Fwtnb.mydns.jp%2Fbleague%2F{{id}}.ics&language=jp">preview</a></li>
   {% endif %}
   {%- endfor -%}
 </ul>
