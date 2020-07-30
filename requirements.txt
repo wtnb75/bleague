@@ -6,3 +6,4 @@ gunicorn
 lxml
 requests
 Click
+beautifulsoup4

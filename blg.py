@@ -44,6 +44,7 @@ class bleague2ical:
         self.urls = [
             # "https://fetch.bleague.jp/1.0/gamesummary/getLeague?GameY=2017&EventKey=league",
             # "file:bleague.json",
+            "file:2020.json",
             "file:2019.json",
             "file:2018.json",
             "file:2017.json",
@@ -138,10 +139,14 @@ class bleague2ical:
                             ev.add("location", "%(StadiumName)s" % (match))
                         match["yyyymmdd"] = match["FullGameDate"].replace(
                             ".", "")
-                        durl = self.detailurl % (match)
-                        ev.add("url", durl)
-                        ev.add(
-                            "uid", "match_id_%(ScheduleKey)s@wtnb.mydns.jp.bleague" % (match))
+                        if "ScheduleKey" in match:
+                            durl = self.detailurl % (match)
+                            ev.add("url", durl)
+                            ev.add(
+                                "uid", "match_id_%(ScheduleKey)s@wtnb.mydns.jp.bleague" % (match))
+                        else:
+                            ev.add(
+                                "uid", "match_noid_%(FullGameDate)s%(HomeMediaTeamID)s_%(AwayMediaTeamID)s@wtnb.mydns.jp.bleague" % (match))
                         ev.add("description", u"%s 第%s節" % (lg, numstr))
                         ical.add_component(ev)
         return ical
