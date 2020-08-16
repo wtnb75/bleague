@@ -1,6 +1,5 @@
 # coding:utf-8
 import sys
-import time
 import requests
 import cachez
 import json
@@ -11,6 +10,7 @@ import logging
 logging.basicConfig(
     format="%(asctime)-15s %(levelname)s %(message)s", level=logging.DEBUG)
 
+log = logging.getLogger(__name__)
 cachez.set_persist_folder("/tmp/cachez")
 
 
@@ -41,32 +41,49 @@ class bleague2ical4:
         }
         query = {
             "s": 1,
-            "tab": tabmap.get(team_data["league_id"], 1),
+            "tab": tabmap.get(int(team_data["league_id"]), 1),
             "year": self.year,
             "event": team_data["league_id"],
             "club": tid,
         }
+        log.info("team schedule %s, query=%s", tid, query)
         httpres = geturl(self.baseurl, query)
         root = BeautifulSoup(httpres, "lxml")
-        tbl = root.find("dl", class_="round__def active")
-        days = tbl.find_all("dt", class_="round__def--tit")
-        games = tbl.find_all("div", class_="data_game")
+        tbls = root.find_all("dl", class_="round__def")
+        days = []
+        games = []
+        for tbl in tbls:
+            days.extend(tbl.find_all("dt", class_="round__def--tit"))
+            games.extend(tbl.find_all("div", class_="data_game"))
         res = []
+        log.info("tbl %s", len(tbl))
+        log.info("days %s", len(days))
+        log.info("games %s", len(games))
         for day, game in zip(days, games):
             daystr = day.text.split(" ", 1)[0]
+            if daystr in ("調整中"):
+                continue
             teams = [x.text.strip() for x in game.find_all("span", class_="team_name")]
             homeid = self.team_revmap.get(teams[0], "un")
             awayid = self.team_revmap.get(teams[1], "un")
-            res.append({"FullGameDate": daystr,
-                        "HomeTeamShortName": teams[0],
-                        "AwayTeamShortName": teams[1],
-                        "GameEndedFlg": "before",
-                        "HomeMediaTeamID": homeid,
-                        "AwayMediaTeamID": awayid,
-                        "Prefecture": "",
-                        "StadiumName": "",
-                        "GameTime": "",
-                        })
+            ent = {"FullGameDate": daystr,
+                   "HomeTeamShortName": teams[0],
+                   "AwayTeamShortName": teams[1],
+                   "GameEndedFlg": "before",
+                   "HomeMediaTeamID": homeid,
+                   "AwayMediaTeamID": awayid,
+                   "Prefecture": "",
+                   "StadiumName": "",
+                   "GameTime": "",
+                   }
+            prefarena = game.find("div", class_="arena")
+            if prefarena is not None:
+                s = prefarena.find_all("span")
+                if len(s) == 3:
+                    ent["Prefecture"] = str(s[0].text)
+                    ent["StadiumName"] = str(s[1].text)
+                    ent["GameTime"] = str(s[2].text.split()[0])
+            res.append(ent)
         return res
 
     def read_teams(self):
@@ -87,46 +104,6 @@ class bleague2ical4:
                 "name": tname,
             }
         return self.teams
-
-    def convert2json(self):
-        data = {}
-        for lg, matches in self.data.items():
-            if len(matches) == 0:
-                continue
-            data[lg] = {}
-            for i, m in enumerate(matches):
-                sn = m["sname"].lstrip("第").rstrip("節")
-                hmid = self.team2id(m["home"])
-                awid = self.team2id(m["away"])
-                if sn not in data[lg]:
-                    data[lg][sn] = []
-                if m["startAt"] is None:
-                    continue
-                ent = {
-                    "ScheduleKey": m["key"],
-                    "FullGameDate": time.strftime("%Y.%m.%d", m["startAt"]),
-                    "GameDate": time.strftime("%m.%d", m["startAt"]),
-                    "GameTime": time.strftime("%H:%M", m["startAt"]),
-                    "HomeTeamShortName": m["home"],
-                    "AwayTeamShortName": m["away"],
-                    "HomeMediaTeamID": hmid,
-                    "AwayMediaTeamID": awid,
-                    "StadiumName": m["arena"],
-                    "Prefecture": m["pref"],
-                    "GameEndedFlg": "after",
-                    "DoubleHeaderFlag": False,
-                }
-                if "homept" in m:
-                    ent["HomeTeamScore"] = m["homept"]
-                if "awaypt" in m:
-                    ent["AwayTeamScore"] = m["awaypt"]
-                if time.time() < time.mktime(m["startAt"]) + 2 * 60 * 60:
-                    ent["GameEndedFlg"] = "before"
-                data[lg][sn].append(ent)
-        return {
-            "result": "OK",
-            "data": data,
-        }
 
 
 @click.group(invoke_without_command=True)
@@ -156,7 +133,7 @@ def team_schedule(output, year, team):
 
 @cli.command()
 @click.option("--output", type=click.File('w'), default=sys.stdout)
-@click.option("--year", type=int, default=2020)
+@click.option("--year", type=int, default=2020, show_default=True)
 def all_schedule(output, year):
     bl = bleague2ical4(year)
     teams = bl.read_teams()
