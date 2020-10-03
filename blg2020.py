@@ -76,6 +76,14 @@ class bleague2ical4:
                    "StadiumName": "",
                    "GameTime": "",
                    }
+            scores = "".join([x.text.strip() for x in game.find_all("span", class_="point")])
+            try:
+                homescore, awayscore = [int(x) for x in scores.replace("\"", "").split("-", 1)]
+                ent["HomeTeamScore"] = homescore
+                ent["AwayTeamScore"] = awayscore
+                ent["GameEndedFlg"] = "after"
+            except ValueError:
+                pass
             prefarena = game.find("div", class_="arena")
             if prefarena is not None:
                 s = prefarena.find_all("span")
@@ -145,11 +153,12 @@ def all_schedule(output, year):
     for t, v in teams.items():
         lname = lmap.get(v["league_id"], "B1")
         if lname not in scheds:
-            scheds[lname] = []
-        scheds[lname].extend(bl.team_schedule(t))
+            scheds[lname] = set()
+        for i in bl.team_schedule(t):
+            scheds[lname].add(frozenset(i.items()))
     data = {}
     for k, v in scheds.items():
-        data[k] = {"?": v}
+        data[k] = {"?": [dict(x) for x in v]}
     json.dump({"result": "OK", "data": data}, ensure_ascii=False, fp=output)
 
 
