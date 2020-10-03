@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 cachez.set_persist_folder("/tmp/cachez")
 
 
-@cachez.persisted(hours=10)
+# @cachez.persisted(hours=10)
 def geturl(url, args={}):
     logging.info("fetching %s %s", url, args)
     return requests.get(url, args).content
